@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer's Soil Helper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #e7f3fe;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Farmer's Soil Helper</h1>
+        <form id="soilForm">
+            <label for="moisture">Soil Moisture:</label>
+            <select id="moisture" required>
+                <option value="">Select moisture level</option>
+                <option value="red">Red (Excess Moisture)</option>
+                <option value="yellow">Yellow (High Moisture)</option>
+                <option value="green">Green (Perfect Moisture)</option>
+                <option value="blue">Blue (Less Moisture)</option>
+                <option value="white">White (Very Less Moisture)</option>
+            </select>
+
+            <label for="soilType">Soil Type:</label>
+            <select id="soilType" required>
+                <option value="">Select soil type</option>
+                <option value="clay">Clay</option>
+                <option value="sandy">Sandy</option>
+                <option value="loamy">Loamy</option>
+                <option value="silt">Silt</option>
+                <option value="peat">Peat</option>
+                <option value="alluvial">Alluvial</option>
+                <option value="black">Black</option>
+                <option value="red">Red</option>
+                <option value="laterite">Laterite</option>
+                <option value="desert">Desert</option>
+                <option value="forest">Forest and Mountainous</option>
+                <option value="marsh">Marsh</option>
+            </select>
+
+            <button type="submit">Get Crop Recommendations</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('soilForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const moisture = document.getElementById('moisture').value;
+            const soilType = document.getElementById('soilType').value;
+            const resultDiv = document.getElementById('result');
+
+            let recommendation = getCropRecommendation(moisture, soilType);
+
+            // Define a color mapping object
+            const colorMap = {
+                red: 'red',
+                yellow: 'orange',
+                green: 'green',
+                blue: 'blue',
+                white: 'black'
+            };
+
+            resultDiv.innerHTML = `
+                <p>Soil Moisture: <span style="color: ${colorMap[moisture]};">${moisture.charAt(0).toUpperCase() + moisture.slice(1)}</span></p>
+                <p>Soil Type: ${soilType.charAt(0).toUpperCase() + soilType.slice(1)}</p>
+                <p>Recommended Crops: ${recommendation}</p>
+                <p>Note: These are general recommendations. Please consult with local agricultural experts for more precise advice.</p>
+            `;
+        });
+
+        function getCropRecommendation(moisture, soilType) {
+            const recommendations = {
+                green: {
+                    clay: 'Wheat, Corn, or Soybeans',
+                    sandy: 'Carrots, Potatoes, or Peanuts',
+                    loamy: 'Tomatoes, Peppers, or Cucumbers',
+                    silt: 'Lettuce, Spinach, or Cabbage',
+                    peat: 'Blueberries, Cranberries, or Strawberries',
+                    alluvial: 'Rice, Jute, or Sugarcane',
+                    black: 'Cotton, Sorghum, or Millet',
+                    red: 'Groundnuts, Potato, or Oilseeds',
+                    laterite: 'Cashew, Rubber, or Tea',
+                    desert: 'Date Palms, Cacti, or Drought-resistant Grasses',
+                    forest: 'Coffee, Spices, or Medicinal Plants',
+                    marsh: 'Rice, Lotus, or Water Chestnut'
+                },
+                blue: {
+                    default: 'Consider drought-resistant crops like Sorghum, Millet, or Sunflowers. Implement irrigation if possible.',
+                    desert: 'Consider xerophytic plants like Aloe Vera or Jojoba. Implement efficient irrigation systems.',
+                    laterite: 'Consider drought-tolerant crops like Cassava or Sweet Potato. Improve soil with organic matter.'
+                },
+                white: {
+                    default: 'Consider drought-resistant crops like Sorghum, Millet, or Sunflowers. Implement irrigation if possible.',
+                    desert: 'Focus on extremely drought-tolerant crops like Agave or Mesquite. Consider greenhouse cultivation.',
+                    laterite: 'Plant drought-resistant legumes like Pigeon Pea or Cowpea. Implement water conservation techniques.'
+                },
+                yellow: {
+                    default: 'Consider water-loving crops like Rice or Taro. Improve drainage if moisture is excessive.',
+                    marsh: 'Ideal for wetland crops like Wild Rice or Watercress. Ensure proper water management.',
+                    forest: 'Consider moisture-loving understory crops like Ginseng or Ferns. Implement erosion control measures.'
+                },
+                red: {
+                    default: 'Consider water-loving crops like Rice or Taro. Improve drainage if moisture is excessive.',
+                    marsh: 'Suitable for aquatic plants like Lotus or Water Lilies. Implement flood control measures.',
+                    alluvial: 'Good for crops like Jute or Hemp. Ensure proper drainage to prevent waterlogging.'
+                }
+            };
+
+            if (moisture === 'green') {
+                return recommendations.green[soilType] || 'No specific recommendation available for this soil type.';
+            } else {
+                return recommendations[moisture][soilType] || recommendations[moisture].default || 'No specific recommendation available for this combination.';
+            }
+        }
+    </script>
+</body>
+</html>
